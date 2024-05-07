@@ -38,6 +38,7 @@ We will be going through a few gadgets in this tutorial. The comprehensive list 
 - Apply the `test-pod.yml` , which is present in this repo
   ```
   $ kubectl apply -f test-pod.yml
+  pod/io-pod configured
   ```
   This will create a pod named io-pod that continuously performs I/O operations for 60 minutes. You can adjust the parameters in the YAML manifest to customize the I/O workload according to your requirements.
 
@@ -49,6 +50,14 @@ At this point, depending on the node on which the pod is scheduled, you can go t
 $ kubectl gadget top block-io
 K8S.NODE         K8S.NAMESPACE    K8S.POD          K8S.CONTAINER    PID     COMM             R/W MAJOR  MINOR  BYTES   TIME(µs) IOs
 ```
+
+You should see something like the below
+```
+K8S.NODE                               K8S.NAMESPACE                          K8S.POD                                K8S.CONTAINER                          PID         COMM                R/W MAJOR               MINOR               BYTES               TIME                OPS       
+aks-node1       default                                io-pod                                 io-container                           1758184     fio                 W   8                   0                   20713472            299529              5057      
+aks-node1      default                                io-pod                                 io-container                           1758184     fio                 R   8                   0                   20258816            579032              4946    
+```
+
 
 
 

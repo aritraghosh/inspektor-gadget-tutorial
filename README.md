@@ -59,6 +59,73 @@ aks-node1      default                                io-pod                    
 ```
 
 
+- Now, we will use the [profile block-io gadget](https://www.inspektor-gadget.io/docs/v0.28.0/builtin-gadgets/profile/block-io/) to see the distribution of the requests
+
+First, we need to get the node on which the pod is running, the NODE column should have the information
+
+```bash
+$ kubectl get pod io-pod -o wide 
+```
+
+- We run the profile block-io gadget on that specific node. Once you quit, you can view the I/O latency and the number of operations in each bucket
+
+```
+bash
+ kubectl gadget profile block-io --node <node-name>
+
+ INFO[0000] Running. Press Ctrl + C to finish
+^C        µs               : count    distribution
+         0 -> 1          : 0        |                                        |
+         2 -> 3          : 0        |                                        |
+         4 -> 7          : 0        |                                        |
+         8 -> 15         : 0        |                                        |
+        16 -> 31         : 25       |                                        |
+        32 -> 63         : 830561   |******************************          |
+        64 -> 127        : 1101439  |****************************************|
+       128 -> 255        : 206979   |*******                                 |
+       256 -> 511        : 14736    |                                        |
+       512 -> 1023       : 1354     |                                        |
+      1024 -> 2047       : 122      |                                        |
+      2048 -> 4095       : 45       |                                        |
+      4096 -> 8191       : 27       |                                        |
+      8192 -> 16383      : 10       |                                        |
+     16384 -> 32767      : 5        |                                        |
+     32768 -> 65535      : 2        |                                        |
+
+ ```
+
+Let's now delete the pod created 
+
+```
+bash
+kubectl delete pod io-pod
+```
+
+When you run the profile block-io gadget again, you see a different distribution. We can observe two trends: the number of operations is significantly lower, and the latencies are also reduced.
+```
+NFO[0000] Running. Press Ctrl + C to finish
+^C        µs               : count    distribution
+         0 -> 1          : 0        |                                        |
+         2 -> 3          : 0        |                                        |
+         4 -> 7          : 0        |                                        |
+         8 -> 15         : 0        |                                        |
+        16 -> 31         : 11       |*                                       |
+        32 -> 63         : 81       |**************                          |
+        64 -> 127        : 126      |**********************                  |
+       128 -> 255        : 226      |****************************************|
+       256 -> 511        : 138      |************************                |
+       512 -> 1023       : 4        |                                        |
+```       
 
 
 
+### OOMKill
+Another interesting example of out of memory tracing is available [here](https://www.inspektor-gadget.io/docs/v0.28.0/builtin-gadgets/trace/oomkill/) 
+
+
+## Uninstalling Inspektor Gadget
+
+```
+bash
+$ kubectl gadget undeploy
+```
